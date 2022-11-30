@@ -1,7 +1,4 @@
-using Microsoft.Extensions.Options;
-using OfficeMicroService.Mapper;
-using OfficeMicroService.Services;
-using OfficeMicroService.Settings;
+using OfficeMicroService.Application.Extensions;
 
 namespace OfficeMicroService
 {
@@ -11,29 +8,24 @@ namespace OfficeMicroService
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            builder.Services.Configure<OfficeStoreDatabaseSettings>(builder.Configuration.GetSection(nameof(OfficeStoreDatabaseSettings)));
-
-            builder.Services.AddSingleton<IOfficeStoreDatabaseSettings>(sp =>
-                sp.GetRequiredService<IOptions<OfficeStoreDatabaseSettings>>().Value);
-            builder.Services.AddSingleton<IOfficeServices, OfficeServices>();
-            builder.Services.AddAutoMapper(typeof(MappingProfile));
+            builder.Services.ConfigureAuthentication();
+            builder.Services.ConfigureDbConnection(builder.Configuration);
+            builder.Services.ConfigureServices();
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            builder.Services.ConfigureSwagger();
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
-
+            app.ConfigureExceptionHandler();
             app.UseHttpsRedirection();
-
+            app.UseAuthentication();
             app.UseAuthorization();
-
             app.UseRouting();
             app.MapControllers();
 

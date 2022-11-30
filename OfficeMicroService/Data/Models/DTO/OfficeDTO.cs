@@ -1,4 +1,4 @@
-﻿namespace OfficeMicroService.Models
+﻿namespace OfficeMicroService.Data.Models.DTO
 {
     public class OfficeDTO
     {

@@ -1,10 +1,9 @@
 ﻿using AutoMapper;
 using MongoDB.Driver;
-using OfficeMicroService.Application.Models;
-using OfficeMicroService.Models;
-using OfficeMicroService.Settings;
+using OfficeMicroService.Data.Models.DTO;
+using OfficeMicroService.Data.Settings;
 
-namespace OfficeMicroService.Services
+namespace OfficeMicroService.Application.Services
 {
     public class OfficeServices : IOfficeServices
     {

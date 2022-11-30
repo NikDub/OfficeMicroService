@@ -1,7 +1,6 @@
-﻿using OfficeMicroService.Application.Models;
-using OfficeMicroService.Models;
+﻿using OfficeMicroService.Data.Models.DTO;
 
-namespace OfficeMicroService.Services
+namespace OfficeMicroService.Application.Services
 {
     public interface IOfficeServices
     {

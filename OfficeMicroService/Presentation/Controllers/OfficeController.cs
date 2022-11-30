@@ -1,10 +1,9 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Mvc;
-using OfficeMicroService.Application.Models;
-using OfficeMicroService.Models;
-using OfficeMicroService.Services;
+﻿using Microsoft.AspNetCore.Mvc;
+using OfficeMicroService.Application.Services;
+using OfficeMicroService.Data.Models.DTO;
+using Serilog;
 
-namespace OfficeMicroService.Controllers
+namespace OfficeMicroService.Presentation.Controllers
 {
     [Route("[controller]/[action]")]
     [ApiController]
@@ -32,6 +31,7 @@ namespace OfficeMicroService.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(OfficeDTO model)
         {
+            Log.Information("Create new Office {0} {1} {2}", model.Address, model.RegistryPhoneNumber, model);
             return Ok(await _officeServices.CreateAsync(model));
         }
 

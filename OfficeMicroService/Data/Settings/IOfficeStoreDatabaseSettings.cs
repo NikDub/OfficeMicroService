@@ -1,4 +1,4 @@
-﻿namespace OfficeMicroService.Settings
+﻿namespace OfficeMicroService.Data.Settings
 {
     public interface IOfficeStoreDatabaseSettings
     {

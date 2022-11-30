@@ -1,8 +1,7 @@
 ﻿using AutoMapper;
-using OfficeMicroService.Application.Models;
-using OfficeMicroService.Models;
+using OfficeMicroService.Data.Models.DTO;
 
-namespace OfficeMicroService.Mapper
+namespace OfficeMicroService.Data.Mapper
 {
     public class MappingProfile : Profile
     {
