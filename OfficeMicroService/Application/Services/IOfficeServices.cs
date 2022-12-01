@@ -1,5 +1,5 @@
-﻿using OfficeMicroService.Data.Models.DTO;
-using OfficeMicroService.Data.Models.Enum;
+﻿using OfficeMicroService.Data.Enum;
+using OfficeMicroService.Data.Models.DTO;
 
 namespace OfficeMicroService.Application.Services
 {

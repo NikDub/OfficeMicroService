@@ -1,4 +1,4 @@
-﻿namespace OfficeMicroService.Data.Models.Enum
+﻿namespace OfficeMicroService.Data.Enum
 {
     public enum OfficeStatus
     {

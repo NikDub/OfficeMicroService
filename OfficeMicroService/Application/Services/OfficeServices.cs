@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using MongoDB.Driver;
+using OfficeMicroService.Data.Enum;
 using OfficeMicroService.Data.Models.DTO;
-using OfficeMicroService.Data.Models.Enum;
 using OfficeMicroService.Data.Settings;
 
 namespace OfficeMicroService.Application.Services

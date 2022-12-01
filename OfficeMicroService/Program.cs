@@ -8,10 +8,11 @@ namespace OfficeMicroService
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            builder.Services.ConfigureAuthentication();
+            builder.Services.ConfigureJWTAuthentication(builder.Configuration);
             builder.Services.ConfigureDbConnection(builder.Configuration);
             builder.Services.ConfigureServices();
             builder.Services.AddControllers();
+            builder.Services.AddAuthorization();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.ConfigureSwagger();
 
@@ -22,11 +23,14 @@ namespace OfficeMicroService
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+
             app.ConfigureExceptionHandler();
+
             app.UseHttpsRedirection();
+
             app.UseAuthentication();
             app.UseAuthorization();
-            app.UseRouting();
+
             app.MapControllers();
 
             app.Run();

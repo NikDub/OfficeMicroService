@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using IdentityMicroService.Domain.Entities.Enums;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using OfficeMicroService.Application.Services;
+using OfficeMicroService.Data.Enum;
 using OfficeMicroService.Data.Models.DTO;
-using OfficeMicroService.Data.Models.Enum;
 using Serilog;
 
 namespace OfficeMicroService.Presentation.Controllers
@@ -29,6 +31,7 @@ namespace OfficeMicroService.Presentation.Controllers
             return Ok(await _officeServices.GetAsync(id));
         }
 
+        [Authorize(Roles = nameof(UserRole.Receptionist))]
         [HttpPost]
         public async Task<IActionResult> Create(OfficeDTO model)
         {
@@ -37,6 +40,7 @@ namespace OfficeMicroService.Presentation.Controllers
             return Ok(office);
         }
 
+        [Authorize(Roles = nameof(UserRole.Receptionist))]
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(string id, OfficeDTO model)
         {
@@ -45,19 +49,24 @@ namespace OfficeMicroService.Presentation.Controllers
             return Ok(office);
         }
 
+        /*
+        [Authorize(Roles = "Receptionist")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(string id)
         {
             await _officeServices.RemoveAsync(id);
             return Ok();
         }
+        */
 
+        [Authorize(Roles = nameof(UserRole.Receptionist))]
         [HttpPut("{id}")]
         public async Task<IActionResult> MakeInactive(string id)
         {
             return Ok(await _officeServices.ChangeStatus(id, OfficeStatus.Inactive));
         }
 
+        [Authorize(Roles = nameof(UserRole.Receptionist))]
         [HttpPut("{id}")]
         public async Task<IActionResult> MakeActive(string id)
         {
