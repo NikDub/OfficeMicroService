@@ -27,7 +27,14 @@ namespace OfficeMicroService.Application.Services
 
         public async Task<OfficeIdDTO> GetAsync(string id)
         {
-            return (await _Offices.FindAsync(Office => Office.Id == id)).FirstOrDefault();
+            try
+            {
+                return (await _Offices.FindAsync(Office => Office.Id == id)).FirstOrDefault();
+            }
+            catch(Exception)
+            {
+                return null;
+            }
         }
 
         public async Task<OfficeIdDTO> CreateAsync(OfficeDTO model)
@@ -41,8 +48,16 @@ namespace OfficeMicroService.Application.Services
         {
             var mapModel = _mapper.Map<OfficeIdDTO>(model);
             mapModel.Id = id;
-            await _Offices.ReplaceOneAsync(Office => Office.Id == id, mapModel);
-            return mapModel;
+
+            try
+            {
+                await _Offices.ReplaceOneAsync(Office => Office.Id == id, mapModel);
+                return mapModel;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
 
         public async Task RemoveAsync(string id)
@@ -56,7 +71,7 @@ namespace OfficeMicroService.Application.Services
             if (office != null)
             {
                 office.Status = status.ToString();
-                await UpdateAsync(id, office);
+                office = await UpdateAsync(id, office);
             }
             return office;
 

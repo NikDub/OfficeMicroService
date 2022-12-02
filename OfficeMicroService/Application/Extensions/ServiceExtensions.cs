@@ -65,6 +65,7 @@ namespace OfficeMicroService.Application.Extensions
                     }
                 });
 
+                setup.IncludeXmlComments(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Comments.xml"));
             });
         }
         public static void ConfigureExceptionHandler(this IApplicationBuilder app)
