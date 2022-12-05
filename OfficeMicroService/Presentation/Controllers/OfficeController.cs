@@ -27,6 +27,7 @@ namespace OfficeMicroService.Presentation.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
+            Log.Information("Method GetAll");
             return Ok(await _officeServices.GetAsync());
         }
 
@@ -40,12 +41,14 @@ namespace OfficeMicroService.Presentation.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(string id)
         {
+            Log.Information("Method GetById {0}", id);
             var office = await _officeServices.GetAsync(id);
-            if (office != null)
+            if (office == null)
             {
-                return Ok();
+                Log.Information("Method GetById NotFound {0}", id);
+                return NotFound();
             }
-            return NotFound();
+            return Ok(office);
         }
 
         /// <summary>
@@ -56,11 +59,11 @@ namespace OfficeMicroService.Presentation.Controllers
         /// <response code="401">Unauthorized</response>
         /// <response code="403">Forbidden</response>
         /// <response code="500">Operation wasn't succeeded</response>
-        [HttpGet("{id}")]
         [Authorize(Roles = nameof(UserRole.Receptionist))]
         [HttpPost]
         public async Task<IActionResult> Create(OfficeDTO model)
         {
+            Log.Information("Method Create {0} {1} {2} {3} {4}", model.City, model.Street, model.HouseNumber, model.RegistryPhoneNumber, model.OfficeNumber);
             var office = await _officeServices.CreateAsync(model);
             return Ok(office);
         }
@@ -79,13 +82,14 @@ namespace OfficeMicroService.Presentation.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(string id, OfficeDTO model)
         {
+            Log.Information("Method Update {0}", id);
             var office = await _officeServices.UpdateAsync(id, model);
-            if (office != null)
+            if (office == null)
             {
-                return Ok(office);
+                Log.Information("Method Update NotFound {0}", id);
+                return NotFound();
             }
-
-            return NotFound();
+            return Ok(office);
         }
 
         /// <summary>
@@ -101,6 +105,7 @@ namespace OfficeMicroService.Presentation.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> MakeInactive(string id)
         {
+            Log.Information("Method MakeInactive {0}", id);
             return Ok(await _officeServices.ChangeStatus(id, OfficeStatus.Inactive));
         }
 
@@ -117,6 +122,7 @@ namespace OfficeMicroService.Presentation.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> MakeActive(string id)
         {
+            Log.Information("Method MakeActive {0}", id);
             return Ok(await _officeServices.ChangeStatus(id, OfficeStatus.Active));
         }
     }

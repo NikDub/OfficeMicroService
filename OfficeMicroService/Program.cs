@@ -15,7 +15,7 @@ namespace OfficeMicroService
             builder.Services.AddAuthorization();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.ConfigureSwagger();
-
+            builder.Services.ConfigureSerilog(builder.Host);
             var app = builder.Build();
 
             if (app.Environment.IsDevelopment())

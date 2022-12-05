@@ -7,6 +7,8 @@ using OfficeMicroService.Application.Services;
 using OfficeMicroService.Data.Mapper;
 using OfficeMicroService.Data.Settings;
 using Serilog;
+using Serilog.Events;
+using Serilog.Extensions.Logging;
 
 namespace OfficeMicroService.Application.Extensions
 {
@@ -73,17 +75,10 @@ namespace OfficeMicroService.Application.Extensions
             app.UseMiddleware<ExceptionHandlingMiddleware>();
         }
 
-        public static void ConfigureSerilog(IHostBuilder host)
+        public static void ConfigureSerilog(this IServiceCollection services, IHostBuilder host)
         {
             host.UseSerilog((hostingContext, loggerConfiguration) =>
-            loggerConfiguration.ReadFrom.Configuration(hostingContext.Configuration));
-
-            Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Debug()
-                .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Information)
-                .MinimumLevel.Override("System", Serilog.Events.LogEventLevel.Information)
-                .Enrich.FromLogContext()
-                .CreateLogger();
+                loggerConfiguration.ReadFrom.Configuration(hostingContext.Configuration));
         }
     }
 }
