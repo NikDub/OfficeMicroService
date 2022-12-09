@@ -3,6 +3,6 @@
     public enum OfficeStatus
     {
         Active,
-        Inactive,
+        Inactive
     }
 }

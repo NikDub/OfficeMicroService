@@ -8,28 +8,28 @@ namespace OfficeMicroService.Application.Services
 {
     public class OfficeServices : IOfficeServices
     {
-        private readonly IMongoCollection<OfficeIdDTO> _Offices;
-        public IMapper _mapper { get; }
+        private readonly IMongoCollection<OfficeIdDTO> _offices;
+        private readonly IMapper _mapper;
 
         public OfficeServices(IOfficeStoreDatabaseSettings settings, IMapper mapper)
         {
             var client = new MongoClient(settings.ConnectionString);
             var database = client.GetDatabase(settings.DatabaseName);
 
-            _Offices = database.GetCollection<OfficeIdDTO>(settings.OfficesCollectionName);
+            _offices = database.GetCollection<OfficeIdDTO>(settings.OfficesCollectionName);
             _mapper = mapper;
         }
 
         public async Task<List<OfficeIdDTO>> GetAsync()
         {
-            return (await _Offices.FindAsync(Office => true)).ToList();
+            return (await _offices.FindAsync(office => true)).ToList();
         }
 
         public async Task<OfficeIdDTO> GetAsync(string id)
         {
             try
             {
-                return (await _Offices.FindAsync(Office => Office.Id == id)).FirstOrDefault();
+                return (await _offices.FindAsync(office => office.Id == id)).FirstOrDefault();
             }
             catch(Exception)
             {
@@ -40,7 +40,7 @@ namespace OfficeMicroService.Application.Services
         public async Task<OfficeIdDTO> CreateAsync(OfficeDTO model)
         {
             var mapModel = _mapper.Map<OfficeIdDTO>(model);
-            await _Offices.InsertOneAsync(mapModel);
+            await _offices.InsertOneAsync(mapModel);
             return mapModel;
         }
 
@@ -51,7 +51,7 @@ namespace OfficeMicroService.Application.Services
 
             try
             {
-                await _Offices.ReplaceOneAsync(Office => Office.Id == id, mapModel);
+                await _offices.ReplaceOneAsync(Office => Office.Id == id, mapModel);
                 return mapModel;
             }
             catch (Exception)
@@ -62,7 +62,7 @@ namespace OfficeMicroService.Application.Services
 
         public async Task RemoveAsync(string id)
         {
-            await _Offices.DeleteOneAsync(Office => Office.Id == id);
+            await _offices.DeleteOneAsync(office => office.Id == id);
         }
 
         public async Task<OfficeIdDTO> ChangeStatus(string id, OfficeStatus status)

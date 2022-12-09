@@ -12,7 +12,7 @@ namespace OfficeMicroService.Presentation.Controllers
     [ApiController]
     public class OfficeController : Controller
     {
-        public IOfficeServices _officeServices { get; }
+        private readonly IOfficeServices _officeServices;
 
         public OfficeController(IOfficeServices officeServices)
         {
