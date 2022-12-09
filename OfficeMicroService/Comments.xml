@@ -4,14 +4,14 @@
         <name>OfficeMicroService</name>
     </assembly>
     <members>
-        <member name="M:OfficeMicroService.Presentation.Controllers.OfficeController.GetAll">
+        <member name="M:OfficeMicroService.Presentation.Controllers.OfficesController.GetAll">
             <summary>
             Get All Offices
             </summary>
             <response code="200">Returns offices list</response>
             <response code="500">Operation wasn't succeeded</response>
         </member>
-        <member name="M:OfficeMicroService.Presentation.Controllers.OfficeController.GetById(System.String)">
+        <member name="M:OfficeMicroService.Presentation.Controllers.OfficesController.GetById(System.String)">
             <summary>
             Get Office Info by id
             </summary>
@@ -20,44 +20,34 @@
             <response code="404">Office not found</response>
             <response code="500">Operation wasn't succeeded</response>
         </member>
-        <member name="M:OfficeMicroService.Presentation.Controllers.OfficeController.Create(OfficeMicroService.Data.Models.DTO.OfficeDTO)">
+        <member name="M:OfficeMicroService.Presentation.Controllers.OfficesController.Create(OfficeMicroService.Data.Models.DTO.OfficeDTO)">
             <summary>
             Create office for Receptionist
             </summary>
             <param name="model"></param>
-            <response code="200">Returns created office</response>
+            <response code="201">Returns created office</response>
             <response code="401">Unauthorized</response>
             <response code="403">Forbidden</response>
             <response code="500">Operation wasn't succeeded</response>
         </member>
-        <member name="M:OfficeMicroService.Presentation.Controllers.OfficeController.Update(System.String,OfficeMicroService.Data.Models.DTO.OfficeDTO)">
+        <member name="M:OfficeMicroService.Presentation.Controllers.OfficesController.Update(System.String,OfficeMicroService.Data.Models.DTO.OfficeDTO)">
             <summary>
             Update office for Receptionist
             </summary>
             <param name="id"></param>
             <param name="model"></param>
-            <response code="200">Returns created office</response>
-            <response code="401">Unauthorized</response>
-            <response code="403">Forbidden</response>
-            <response code="404">Office not found</response>
-            <response code="500">Operation wasn't succeeded</response>
-        </member>
-        <member name="M:OfficeMicroService.Presentation.Controllers.OfficeController.MakeInactive(System.String)">
-            <summary>
-            Update office status to Inactive for Receptionist
-            </summary>
-            <param name="id"></param>
             <response code="200">Returns updated office</response>
             <response code="401">Unauthorized</response>
             <response code="403">Forbidden</response>
             <response code="404">Office not found</response>
             <response code="500">Operation wasn't succeeded</response>
         </member>
-        <member name="M:OfficeMicroService.Presentation.Controllers.OfficeController.MakeActive(System.String)">
+        <member name="M:OfficeMicroService.Presentation.Controllers.OfficesController.ChangeStatus(System.String)">
             <summary>
-            Update office status to Active for Receptionist
+            Update office status for Receptionist
             </summary>
             <param name="id"></param>
+            <param name="status"></param>
             <response code="200">Returns updated office</response>
             <response code="401">Unauthorized</response>
             <response code="403">Forbidden</response>

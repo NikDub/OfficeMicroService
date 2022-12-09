@@ -7,8 +7,6 @@ using OfficeMicroService.Application.Services;
 using OfficeMicroService.Data.Mapper;
 using OfficeMicroService.Data.Settings;
 using Serilog;
-using Serilog.Events;
-using Serilog.Extensions.Logging;
 
 namespace OfficeMicroService.Application.Extensions
 {
@@ -20,10 +18,13 @@ namespace OfficeMicroService.Application.Extensions
                    .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
                    {
                        options.Authority = configuration.GetValue<string>("Routes:AuthorityRoute");
-                       options.Audience = "TestsAPI";
+                       options.Audience = configuration.GetValue<string>("Routes:Scopes");
                        options.TokenValidationParameters = new TokenValidationParameters
                        {
-                           ValidateAudience = false
+                           ValidateAudience = false,
+                           ValidateIssuer = true,
+                           ValidIssuer = configuration.GetValue<string>("Routes:AuthorityRoute"),
+                           ValidateLifetime = true
                        };
                    });
         }

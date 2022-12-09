@@ -7,9 +7,10 @@ namespace OfficeMicroService
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            var configuration = builder.Configuration;
 
-            builder.Services.ConfigureJWTAuthentication(builder.Configuration);
-            builder.Services.ConfigureDbConnection(builder.Configuration);
+            builder.Services.ConfigureJWTAuthentication(configuration);
+            builder.Services.ConfigureDbConnection(configuration);
             builder.Services.ConfigureServices();
             builder.Services.AddControllers();
             builder.Services.AddAuthorization();

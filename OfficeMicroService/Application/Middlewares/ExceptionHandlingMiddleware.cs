@@ -1,5 +1,6 @@
 ﻿using OfficeMicroService.Application.Exceptions;
 using OfficeMicroService.Data.Models;
+using Serilog;
 
 namespace OfficeMicroService.Application.Middlewares
 {
@@ -10,6 +11,7 @@ namespace OfficeMicroService.Application.Middlewares
         {
             _next = next;
         }
+
         public async Task InvokeAsync(HttpContext httpContext)
         {
             try
@@ -21,6 +23,7 @@ namespace OfficeMicroService.Application.Middlewares
                 await HandleExceptionAsync(httpContext, ex);
             }
         }
+
         private async Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
             context.Response.ContentType = "application/json";
@@ -30,6 +33,9 @@ namespace OfficeMicroService.Application.Middlewares
                 UnauthorizedException => StatusCodes.Status401Unauthorized,
                 _ => StatusCodes.Status500InternalServerError
             };
+
+            Log.Error("Error {0}, {1}, {2}", context.Response.StatusCode, exception.Message, exception.StackTrace);
+
             await context.Response.WriteAsync(new ErrorDetails()
             {
                 StatusCode = context.Response.StatusCode,

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using OfficeMicroService.Data.Models;
 using OfficeMicroService.Data.Models.DTO;
 
 namespace OfficeMicroService.Data.Mapper
@@ -7,7 +8,7 @@ namespace OfficeMicroService.Data.Mapper
     {
         public MappingProfile()
         {
-            CreateMap<OfficeDTO, OfficeIdDTO>().ReverseMap();
+            CreateMap<OfficeDTO, Office>().ReverseMap();
         }
     }
 }

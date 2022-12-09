@@ -2,19 +2,18 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OfficeMicroService.Application.Services;
-using OfficeMicroService.Data.Enum;
 using OfficeMicroService.Data.Models.DTO;
 using Serilog;
 
 namespace OfficeMicroService.Presentation.Controllers
 {
-    [Route("[controller]/[action]")]
+    [Route("[controller]")]
     [ApiController]
-    public class OfficeController : Controller
+    public class OfficesController : Controller
     {
         private readonly IOfficeServices _officeServices;
 
-        public OfficeController(IOfficeServices officeServices)
+        public OfficesController(IOfficeServices officeServices)
         {
             _officeServices = officeServices;
         }
@@ -27,8 +26,8 @@ namespace OfficeMicroService.Presentation.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            Log.Information("Method GetAll");
-            return Ok(await _officeServices.GetAsync());
+            Log.Information("Method {0}", nameof(GetAll));
+            return Ok(await _officeServices.GetAllAsync());
         }
 
         /// <summary>
@@ -41,7 +40,7 @@ namespace OfficeMicroService.Presentation.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(string id)
         {
-            Log.Information("Method GetById {0}", id);
+            Log.Information("Method {0} {1}", nameof(GetById), id);
             var office = await _officeServices.GetAsync(id);
             if (office == null)
             {
@@ -55,7 +54,7 @@ namespace OfficeMicroService.Presentation.Controllers
         /// Create office for Receptionist
         /// </summary>
         /// <param name="model"></param>
-        /// <response code="200">Returns created office</response>
+        /// <response code="201">Returns created office</response>
         /// <response code="401">Unauthorized</response>
         /// <response code="403">Forbidden</response>
         /// <response code="500">Operation wasn't succeeded</response>
@@ -63,9 +62,15 @@ namespace OfficeMicroService.Presentation.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(OfficeDTO model)
         {
-            Log.Information("Method Create {0} {1} {2} {3} {4}", model.City, model.Street, model.HouseNumber, model.RegistryPhoneNumber, model.OfficeNumber);
+            Log.Information("Method {0} {1} {2} {3} {4} {5} {6} {7}", nameof(Create), model.City, model.Street, model.HouseNumber, model.RegistryPhoneNumber, model.Status, model.PhotoId, model.OfficeNumber);
             var office = await _officeServices.CreateAsync(model);
-            return Ok(office);
+            if (office == null)
+            {
+                Log.Error("Method {0} can't created entity {1} {2} {3} {4} {5} {6} {7}", nameof(Create), model.City, model.Street, model.HouseNumber, model.RegistryPhoneNumber, model.Status, model.PhotoId, model.OfficeNumber);
+                return BadRequest();
+            }
+
+            return Created("", office);
         }
 
         /// <summary>
@@ -73,7 +78,7 @@ namespace OfficeMicroService.Presentation.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <param name="model"></param>
-        /// <response code="200">Returns created office</response>
+        /// <response code="200">Returns updated office</response>
         /// <response code="401">Unauthorized</response>
         /// <response code="403">Forbidden</response>
         /// <response code="404">Office not found</response>
@@ -82,48 +87,33 @@ namespace OfficeMicroService.Presentation.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(string id, OfficeDTO model)
         {
-            Log.Information("Method Update {0}", id);
+            Log.Information("Method {0} {1}", nameof(Update), id);
             var office = await _officeServices.UpdateAsync(id, model);
             if (office == null)
             {
-                Log.Information("Method Update NotFound {0}", id);
+                Log.Information("Method {0} NotFound {1}", nameof(Update), id);
                 return NotFound();
             }
-            return Ok(office);
+            return Created("", office);
         }
 
         /// <summary>
-        /// Update office status to Inactive for Receptionist
+        /// Update office status for Receptionist
         /// </summary>
         /// <param name="id"></param>
+        /// <param name="status"></param>
         /// <response code="200">Returns updated office</response>
         /// <response code="401">Unauthorized</response>
         /// <response code="403">Forbidden</response>
         /// <response code="404">Office not found</response>
         /// <response code="500">Operation wasn't succeeded</response>
         [Authorize(Roles = nameof(UserRole.Receptionist))]
-        [HttpPut("{id}")]
-        public async Task<IActionResult> MakeInactive(string id)
+        [HttpPut("{id}/status")]
+        public async Task<IActionResult> ChangeStatus(string id)
         {
-            Log.Information("Method MakeInactive {0}", id);
-            return Ok(await _officeServices.ChangeStatus(id, OfficeStatus.Inactive));
-        }
-
-        /// <summary>
-        /// Update office status to Active for Receptionist
-        /// </summary>
-        /// <param name="id"></param>
-        /// <response code="200">Returns updated office</response>
-        /// <response code="401">Unauthorized</response>
-        /// <response code="403">Forbidden</response>
-        /// <response code="404">Office not found</response>
-        /// <response code="500">Operation wasn't succeeded</response>
-        [Authorize(Roles = nameof(UserRole.Receptionist))]
-        [HttpPut("{id}")]
-        public async Task<IActionResult> MakeActive(string id)
-        {
-            Log.Information("Method MakeActive {0}", id);
-            return Ok(await _officeServices.ChangeStatus(id, OfficeStatus.Active));
+            Log.Information("Method {0} {1}", nameof(ChangeStatus), id);
+            await _officeServices.ChangeStatus(id);
+            return Created("", null);
         }
     }
 }

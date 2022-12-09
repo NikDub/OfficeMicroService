@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using MongoDB.Driver;
 using OfficeMicroService.Data.Enum;
+using OfficeMicroService.Data.Models;
 using OfficeMicroService.Data.Models.DTO;
 using OfficeMicroService.Data.Settings;
 
@@ -8,7 +9,7 @@ namespace OfficeMicroService.Application.Services
 {
     public class OfficeServices : IOfficeServices
     {
-        private readonly IMongoCollection<OfficeIdDTO> _offices;
+        private readonly IMongoCollection<Office> _offices;
         private readonly IMapper _mapper;
 
         public OfficeServices(IOfficeStoreDatabaseSettings settings, IMapper mapper)
@@ -16,37 +17,40 @@ namespace OfficeMicroService.Application.Services
             var client = new MongoClient(settings.ConnectionString);
             var database = client.GetDatabase(settings.DatabaseName);
 
-            _offices = database.GetCollection<OfficeIdDTO>(settings.OfficesCollectionName);
+            _offices = database.GetCollection<Office>(settings.OfficesCollectionName);
             _mapper = mapper;
         }
 
-        public async Task<List<OfficeIdDTO>> GetAsync()
+        public async Task<List<Office>> GetAllAsync()
         {
             return (await _offices.FindAsync(office => true)).ToList();
         }
 
-        public async Task<OfficeIdDTO> GetAsync(string id)
+        public async Task<Office> GetAsync(string id)
         {
             try
             {
                 return (await _offices.FindAsync(office => office.Id == id)).FirstOrDefault();
             }
-            catch(Exception)
+            catch (Exception)
             {
                 return null;
             }
         }
 
-        public async Task<OfficeIdDTO> CreateAsync(OfficeDTO model)
+        public async Task<Office> CreateAsync(OfficeDTO model)
         {
-            var mapModel = _mapper.Map<OfficeIdDTO>(model);
+            var mapModel = _mapper.Map<Office>(model);
+            if (mapModel == null)
+                return null;
+
             await _offices.InsertOneAsync(mapModel);
             return mapModel;
         }
 
-        public async Task<OfficeIdDTO> UpdateAsync(string id, OfficeDTO model)
+        public async Task<Office> UpdateAsync(string id, OfficeDTO model)
         {
-            var mapModel = _mapper.Map<OfficeIdDTO>(model);
+            var mapModel = _mapper.Map<Office>(model);
             mapModel.Id = id;
 
             try
@@ -65,16 +69,23 @@ namespace OfficeMicroService.Application.Services
             await _offices.DeleteOneAsync(office => office.Id == id);
         }
 
-        public async Task<OfficeIdDTO> ChangeStatus(string id, OfficeStatus status)
+        public async Task<Office> ChangeStatus(string id)
         {
+
             var office = await GetAsync(id);
-            if (office != null)
+            if (office == null)
+                return null;
+
+            OfficeStatus status;
+            if (Enum.TryParse(office.Status, out status))
             {
+                status++;
                 office.Status = status.ToString();
                 office = await UpdateAsync(id, office);
+                return office;
             }
-            return office;
 
+            return null;
         }
     }
 }

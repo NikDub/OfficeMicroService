@@ -1,9 +1,10 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using OfficeMicroService.Data.Models.DTO;
 
-namespace OfficeMicroService.Data.Models.DTO
+namespace OfficeMicroService.Data.Models
 {
-    public class OfficeIdDTO : OfficeDTO
+    public class Office : OfficeDTO
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]

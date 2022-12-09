@@ -1,18 +1,21 @@
 ﻿using OfficeMicroService.Data.Enum;
+using OfficeMicroService.Data.Models;
 using OfficeMicroService.Data.Models.DTO;
 
 namespace OfficeMicroService.Application.Services
 {
     public interface IOfficeServices
     {
-        Task<List<OfficeIdDTO>> GetAsync();
-        Task<OfficeIdDTO> GetAsync(string id);
+        Task<List<Office>> GetAllAsync();
 
-        Task<OfficeIdDTO> CreateAsync(OfficeDTO model);
+        Task<Office> GetAsync(string id);
 
-        Task<OfficeIdDTO> UpdateAsync(string id, OfficeDTO model);
+        Task<Office> CreateAsync(OfficeDTO model);
+
+        Task<Office> UpdateAsync(string id, OfficeDTO model);
 
         Task RemoveAsync(string id);
-        Task<OfficeIdDTO> ChangeStatus(string id, OfficeStatus status);
+
+        Task<Office> ChangeStatus(string id);
     }
 }
