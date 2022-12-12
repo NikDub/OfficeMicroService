@@ -55,6 +55,7 @@ namespace OfficeMicroService.Presentation.Controllers
         /// </summary>
         /// <param name="model"></param>
         /// <response code="201">Returns created office</response>
+        /// <response code="400">Incorrect model</response>
         /// <response code="401">Unauthorized</response>
         /// <response code="403">Forbidden</response>
         /// <response code="500">Operation wasn't succeeded</response>
@@ -63,6 +64,10 @@ namespace OfficeMicroService.Presentation.Controllers
         public async Task<IActionResult> Create(OfficeDTO model)
         {
             Log.Information("Method {0} {1} {2} {3} {4} {5} {6} {7}", nameof(Create), model.City, model.Street, model.HouseNumber, model.RegistryPhoneNumber, model.Status, model.PhotoId, model.OfficeNumber);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(model);
+            }
             var office = await _officeServices.CreateAsync(model);
             if (office == null)
             {
@@ -79,6 +84,7 @@ namespace OfficeMicroService.Presentation.Controllers
         /// <param name="id"></param>
         /// <param name="model"></param>
         /// <response code="200">Returns updated office</response>
+        /// <response code="400">Incorrect model</response>
         /// <response code="401">Unauthorized</response>
         /// <response code="403">Forbidden</response>
         /// <response code="404">Office not found</response>
@@ -88,6 +94,10 @@ namespace OfficeMicroService.Presentation.Controllers
         public async Task<IActionResult> Update(string id, OfficeDTO model)
         {
             Log.Information("Method {0} {1}", nameof(Update), id);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(model);
+            }
             var office = await _officeServices.UpdateAsync(id, model);
             if (office == null)
             {

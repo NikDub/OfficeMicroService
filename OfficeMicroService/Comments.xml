@@ -26,6 +26,7 @@
             </summary>
             <param name="model"></param>
             <response code="201">Returns created office</response>
+            <response code="400">Incorrect model</response>
             <response code="401">Unauthorized</response>
             <response code="403">Forbidden</response>
             <response code="500">Operation wasn't succeeded</response>
@@ -37,6 +38,7 @@
             <param name="id"></param>
             <param name="model"></param>
             <response code="200">Returns updated office</response>
+            <response code="400">Incorrect model</response>
             <response code="401">Unauthorized</response>
             <response code="403">Forbidden</response>
             <response code="404">Office not found</response>

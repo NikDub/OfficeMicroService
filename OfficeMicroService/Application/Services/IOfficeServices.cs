@@ -6,7 +6,7 @@ namespace OfficeMicroService.Application.Services
 {
     public interface IOfficeServices
     {
-        Task<List<Office>> GetAllAsync();
+        Task<List<OfficeList>> GetAllAsync();
 
         Task<Office> GetAsync(string id);
 

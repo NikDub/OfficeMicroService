@@ -4,6 +4,8 @@ using OfficeMicroService.Data.Enum;
 using OfficeMicroService.Data.Models;
 using OfficeMicroService.Data.Models.DTO;
 using OfficeMicroService.Data.Settings;
+using System.Data.Common;
+using System.Runtime.InteropServices;
 
 namespace OfficeMicroService.Application.Services
 {
@@ -21,21 +23,19 @@ namespace OfficeMicroService.Application.Services
             _mapper = mapper;
         }
 
-        public async Task<List<Office>> GetAllAsync()
+        public async Task<List<OfficeList>> GetAllAsync()
         {
-            return (await _offices.FindAsync(office => true)).ToList();
+            var officeList = (await _offices.FindAsync(office => true)).ToList();
+            var mapModel = _mapper.Map<List<OfficeList>>(officeList);
+            if (mapModel == null)
+                return null;
+
+            return mapModel;
         }
 
         public async Task<Office> GetAsync(string id)
         {
-            try
-            {
-                return (await _offices.FindAsync(office => office.Id == id)).FirstOrDefault();
-            }
-            catch (Exception)
-            {
-                return null;
-            }
+            return (await _offices.FindAsync(office => office.Id == id)).FirstOrDefault();
         }
 
         public async Task<Office> CreateAsync(OfficeDTO model)

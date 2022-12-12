@@ -9,6 +9,7 @@ namespace OfficeMicroService.Data.Mapper
         public MappingProfile()
         {
             CreateMap<OfficeDTO, Office>().ReverseMap();
+            CreateMap<OfficeList, Office>().ReverseMap();
         }
     }
 }

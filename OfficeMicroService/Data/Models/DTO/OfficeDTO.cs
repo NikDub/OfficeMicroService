@@ -1,5 +1,6 @@
 ﻿using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson;
+using System.ComponentModel.DataAnnotations;
 
 namespace OfficeMicroService.Data.Models.DTO
 {
@@ -16,7 +17,9 @@ namespace OfficeMicroService.Data.Models.DTO
         [BsonRequired]
         public string HouseNumber { get; set; }
         public string OfficeNumber { get; set; }
+
         [BsonRequired]
+        [RegularExpression("[+]{1}[0-9]{12}", ErrorMessage = "Incorrect phone number")]
         public string RegistryPhoneNumber { get; set; }
     }
 }
