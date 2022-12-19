@@ -1,87 +1,79 @@
 ﻿using AutoMapper;
 using MongoDB.Driver;
+using OfficeMicroService.Application.Exceptions;
+using OfficeMicroService.Application.Services.DTO;
 using OfficeMicroService.Data.Enum;
 using OfficeMicroService.Data.Models;
-using OfficeMicroService.Data.Models.DTO;
-using OfficeMicroService.Data.Settings;
-using System.Data.Common;
-using System.Runtime.InteropServices;
+using OfficeMicroService.Data.Repository;
 
 namespace OfficeMicroService.Application.Services
 {
     public class OfficeServices : IOfficeServices
     {
-        private readonly IMongoCollection<Office> _offices;
+        private readonly IOfficeRepository _repository;
         private readonly IMapper _mapper;
 
-        public OfficeServices(IOfficeStoreDatabaseSettings settings, IMapper mapper)
+        public OfficeServices(IOfficeRepository repository, IMapper mapper)
         {
-            var client = new MongoClient(settings.ConnectionString);
-            var database = client.GetDatabase(settings.DatabaseName);
-
-            _offices = database.GetCollection<Office>(settings.OfficesCollectionName);
+            _repository = repository;
             _mapper = mapper;
         }
 
-        public async Task<List<OfficeList>> GetAllAsync()
+        public async Task<List<OfficeDTO>> GetAllAsync()
         {
-            var officeList = (await _offices.FindAsync(office => true)).ToList();
-            var mapModel = _mapper.Map<List<OfficeList>>(officeList);
-            if (mapModel == null)
-                return null;
-
-            return mapModel;
+            var offices = (await _repository.FindByCondition(office => true));
+            return _mapper.Map<List<OfficeDTO>>(offices);
         }
-
-        public async Task<Office> GetAsync(string id)
+        public async Task<OfficeDTO> GetAsync(string id)
         {
-            return (await _offices.FindAsync(office => office.Id == id)).FirstOrDefault();
+            var office = (await _repository.FindByCondition(office => office.Id == id)).FirstOrDefault();
+            return _mapper.Map<OfficeDTO>(office);
         }
-
-        public async Task<Office> CreateAsync(OfficeDTO model)
+        public async Task<OfficeDTO> CreateAsync(OfficeForChangeDTO model)
         {
             var mapModel = _mapper.Map<Office>(model);
             if (mapModel == null)
                 return null;
 
-            await _offices.InsertOneAsync(mapModel);
-            return mapModel;
+            await _repository.CreateAsync(mapModel);
+
+            return _mapper.Map<OfficeDTO>(mapModel);
         }
 
-        public async Task<Office> UpdateAsync(string id, OfficeDTO model)
+        public async Task<OfficeDTO> UpdateAsync(string id, OfficeForUpdateDTO model)
         {
+            var office = GetAsync(id);
+            if (office == null)
+                return null;
+
             var mapModel = _mapper.Map<Office>(model);
             mapModel.Id = id;
 
-            try
-            {
-                await _offices.ReplaceOneAsync(Office => Office.Id == id, mapModel);
-                return mapModel;
-            }
-            catch (Exception)
-            {
-                return null;
-            }
+            await _repository.UpdateAsync(mapModel);
+            return _mapper.Map<OfficeDTO>(mapModel);
         }
 
         public async Task RemoveAsync(string id)
         {
-            await _offices.DeleteOneAsync(office => office.Id == id);
+            await _repository.DeleteAsync(office => office.Id == id);
         }
 
-        public async Task<Office> ChangeStatus(string id)
+        public async Task<OfficeDTO> ChangeStatusAsync(string id)
         {
 
             var office = await GetAsync(id);
             if (office == null)
-                return null;
+                throw new NotFoundException("Office not found.");
 
             OfficeStatus status;
             if (Enum.TryParse(office.Status, out status))
             {
-                status++;
-                office.Status = status.ToString();
-                office = await UpdateAsync(id, office);
+                if (status == OfficeStatus.Active)
+                    office.Status = OfficeStatus.Inactive.ToString();
+                else
+                    office.Status = OfficeStatus.Active.ToString();
+
+                office = await UpdateAsync(id, _mapper.Map<OfficeForUpdateDTO>(office));
                 return office;
             }
 

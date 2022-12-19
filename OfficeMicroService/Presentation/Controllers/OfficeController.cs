@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OfficeMicroService.Application.Services;
-using OfficeMicroService.Data.Models.DTO;
+using OfficeMicroService.Application.Services.DTO;
 using Serilog;
 
 namespace OfficeMicroService.Presentation.Controllers
@@ -44,7 +44,7 @@ namespace OfficeMicroService.Presentation.Controllers
             var office = await _officeServices.GetAsync(id);
             if (office == null)
             {
-                Log.Information("Method GetById NotFound {0}", id);
+                Log.Information("Method {0}, Office {1} NotFound", nameof(GetById), id);
                 return NotFound();
             }
             return Ok(office);
@@ -55,18 +55,19 @@ namespace OfficeMicroService.Presentation.Controllers
         /// </summary>
         /// <param name="model"></param>
         /// <response code="201">Returns created office</response>
-        /// <response code="400">Incorrect model</response>
+        /// <response code="422">Incorrect model</response>
         /// <response code="401">Unauthorized</response>
         /// <response code="403">Forbidden</response>
         /// <response code="500">Operation wasn't succeeded</response>
         [Authorize(Roles = nameof(UserRole.Receptionist))]
         [HttpPost]
-        public async Task<IActionResult> Create(OfficeDTO model)
+        public async Task<IActionResult> Create(OfficeForChangeDTO model)
         {
             Log.Information("Method {0} {1} {2} {3} {4} {5} {6} {7}", nameof(Create), model.City, model.Street, model.HouseNumber, model.RegistryPhoneNumber, model.Status, model.PhotoId, model.OfficeNumber);
             if (!ModelState.IsValid)
             {
-                return BadRequest(model);
+                Log.Error("Method {0}, Model UnprocessableEntity with {1} {2} {3} {4} {5} {6} {7}", nameof(Create), model.City, model.Street, model.HouseNumber, model.RegistryPhoneNumber, model.Status, model.PhotoId, model.OfficeNumber);
+                return UnprocessableEntity(model);
             }
             var office = await _officeServices.CreateAsync(model);
             if (office == null)
@@ -83,28 +84,29 @@ namespace OfficeMicroService.Presentation.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <param name="model"></param>
-        /// <response code="200">Returns updated office</response>
-        /// <response code="400">Incorrect model</response>
+        /// <response code="204">Returns if office was updated</response>
+        /// <response code="422">Incorrect model</response>
         /// <response code="401">Unauthorized</response>
         /// <response code="403">Forbidden</response>
         /// <response code="404">Office not found</response>
         /// <response code="500">Operation wasn't succeeded</response>
         [Authorize(Roles = nameof(UserRole.Receptionist))]
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(string id, OfficeDTO model)
+        public async Task<IActionResult> Update(string id, OfficeForUpdateDTO model)
         {
             Log.Information("Method {0} {1}", nameof(Update), id);
             if (!ModelState.IsValid)
             {
-                return BadRequest(model);
+                Log.Error("Method {0}, Model UnprocessableEntity with {1} {2} {3} {4} {5} {6} {7}", nameof(Update), model.City, model.Street, model.HouseNumber, model.RegistryPhoneNumber, model.Status, model.PhotoId, model.OfficeNumber);
+                return UnprocessableEntity(model);
             }
             var office = await _officeServices.UpdateAsync(id, model);
             if (office == null)
             {
-                Log.Information("Method {0} NotFound {1}", nameof(Update), id);
+                Log.Information("Method {0}, Office {1}  NotFound", nameof(Update), id);
                 return NotFound();
             }
-            return Created("", office);
+            return NoContent();
         }
 
         /// <summary>
@@ -112,7 +114,7 @@ namespace OfficeMicroService.Presentation.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <param name="status"></param>
-        /// <response code="200">Returns updated office</response>
+        /// <response code="200">Returns if office status was updated</response>
         /// <response code="401">Unauthorized</response>
         /// <response code="403">Forbidden</response>
         /// <response code="404">Office not found</response>
@@ -122,8 +124,8 @@ namespace OfficeMicroService.Presentation.Controllers
         public async Task<IActionResult> ChangeStatus(string id)
         {
             Log.Information("Method {0} {1}", nameof(ChangeStatus), id);
-            await _officeServices.ChangeStatus(id);
-            return Created("", null);
+            await _officeServices.ChangeStatusAsync(id);
+            return NoContent();
         }
     }
 }
