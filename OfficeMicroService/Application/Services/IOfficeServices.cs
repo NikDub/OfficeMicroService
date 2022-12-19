@@ -1,4 +1,4 @@
-﻿using OfficeMicroService.Application.Services.DTO;
+﻿using OfficeMicroService.Application.DTO;
 using OfficeMicroService.Data.Enum;
 using OfficeMicroService.Data.Models;
 

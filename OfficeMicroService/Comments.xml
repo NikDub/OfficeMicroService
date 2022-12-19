@@ -20,28 +20,28 @@
             <response code="404">Office not found</response>
             <response code="500">Operation wasn't succeeded</response>
         </member>
-        <member name="M:OfficeMicroService.Presentation.Controllers.OfficesController.Create(OfficeMicroService.Application.Services.DTO.OfficeForChangeDTO)">
+        <member name="M:OfficeMicroService.Presentation.Controllers.OfficesController.Create(OfficeMicroService.Application.DTO.OfficeForChangeDTO)">
             <summary>
             Create office for Receptionist
             </summary>
             <param name="model"></param>
             <response code="201">Returns created office</response>
-            <response code="422">Incorrect model</response>
             <response code="401">Unauthorized</response>
             <response code="403">Forbidden</response>
+            <response code="422">Incorrect model</response>
             <response code="500">Operation wasn't succeeded</response>
         </member>
-        <member name="M:OfficeMicroService.Presentation.Controllers.OfficesController.Update(System.String,OfficeMicroService.Application.Services.DTO.OfficeForUpdateDTO)">
+        <member name="M:OfficeMicroService.Presentation.Controllers.OfficesController.Update(System.String,OfficeMicroService.Application.DTO.OfficeForUpdateDTO)">
             <summary>
             Update office for Receptionist
             </summary>
             <param name="id"></param>
             <param name="model"></param>
             <response code="204">Returns if office was updated</response>
-            <response code="422">Incorrect model</response>
             <response code="401">Unauthorized</response>
             <response code="403">Forbidden</response>
             <response code="404">Office not found</response>
+            <response code="422">Incorrect model</response>
             <response code="500">Operation wasn't succeeded</response>
         </member>
         <member name="M:OfficeMicroService.Presentation.Controllers.OfficesController.ChangeStatus(System.String)">

@@ -30,7 +30,6 @@ namespace OfficeMicroService.Application.Middlewares
             context.Response.StatusCode = exception switch
             {
                 NotFoundException => StatusCodes.Status404NotFound,
-                UnauthorizedException => StatusCodes.Status401Unauthorized,
                 _ => StatusCodes.Status500InternalServerError
             };
 

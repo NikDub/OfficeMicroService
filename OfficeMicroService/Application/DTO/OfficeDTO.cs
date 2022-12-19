@@ -2,7 +2,7 @@
 using MongoDB.Bson;
 using System.ComponentModel.DataAnnotations;
 
-namespace OfficeMicroService.Application.Services.DTO
+namespace OfficeMicroService.Application.DTO
 {
     public class OfficeDTO
     {

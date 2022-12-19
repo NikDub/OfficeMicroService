@@ -2,9 +2,9 @@
 using MongoDB.Bson;
 using System.ComponentModel.DataAnnotations;
 
-namespace OfficeMicroService.Application.Services.DTO
+namespace OfficeMicroService.Application.DTO
 {
-    public class OfficeForChangeDTO
+    public class OfficeForUpdateDTO
     {
         private const string NumberRegex = "[+]{1}[0-9]{12}";
 

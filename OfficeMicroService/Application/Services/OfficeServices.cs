@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using MongoDB.Driver;
+using OfficeMicroService.Application.DTO;
 using OfficeMicroService.Application.Exceptions;
-using OfficeMicroService.Application.Services.DTO;
 using OfficeMicroService.Data.Enum;
 using OfficeMicroService.Data.Models;
 using OfficeMicroService.Data.Repository;
@@ -31,9 +31,9 @@ namespace OfficeMicroService.Application.Services
         }
         public async Task<OfficeDTO> CreateAsync(OfficeForChangeDTO model)
         {
-            var mapModel = _mapper.Map<Office>(model);
-            if (mapModel == null)
+            if (model == null)
                 return null;
+            var mapModel = _mapper.Map<Office>(model);
 
             await _repository.CreateAsync(mapModel);
 
@@ -43,7 +43,7 @@ namespace OfficeMicroService.Application.Services
         public async Task<OfficeDTO> UpdateAsync(string id, OfficeForUpdateDTO model)
         {
             var office = GetAsync(id);
-            if (office == null)
+            if (office == null && model == null)
                 return null;
 
             var mapModel = _mapper.Map<Office>(model);
@@ -60,7 +60,6 @@ namespace OfficeMicroService.Application.Services
 
         public async Task<OfficeDTO> ChangeStatusAsync(string id)
         {
-
             var office = await GetAsync(id);
             if (office == null)
                 throw new NotFoundException("Office not found.");
@@ -68,13 +67,11 @@ namespace OfficeMicroService.Application.Services
             OfficeStatus status;
             if (Enum.TryParse(office.Status, out status))
             {
-                if (status == OfficeStatus.Active)
-                    office.Status = OfficeStatus.Inactive.ToString();
-                else
-                    office.Status = OfficeStatus.Active.ToString();
+                office.Status = (status == OfficeStatus.Active ? OfficeStatus.Inactive : OfficeStatus.Active).ToString();
 
-                office = await UpdateAsync(id, _mapper.Map<OfficeForUpdateDTO>(office));
-                return office;
+                var mapModel = _mapper.Map<Office>(office);
+                await _repository.UpdateAsync(mapModel);
+                return _mapper.Map<OfficeDTO>(mapModel);
             }
 
             return null;

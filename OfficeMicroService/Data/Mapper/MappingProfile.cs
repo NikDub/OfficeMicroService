@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using OfficeMicroService.Application.Services.DTO;
+using OfficeMicroService.Application.DTO;
 using OfficeMicroService.Data.Models;
 
 namespace OfficeMicroService.Data.Mapper
