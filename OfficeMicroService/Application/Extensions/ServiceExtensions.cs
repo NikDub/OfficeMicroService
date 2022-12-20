@@ -24,7 +24,7 @@ namespace OfficeMicroService.Application.Extensions
                        options.TokenValidationParameters = new TokenValidationParameters
                        {
                            ValidateAudience = true,
-                           ValidAudience = "TestsAPI",
+                           ValidAudience = configuration.GetValue<string>("Routes:Scopes") ?? throw new NotImplementedException(),
                            ValidateIssuer = true,
                            ValidIssuer = configuration.GetValue<string>("Routes:AuthorityRoute") ?? throw new NotImplementedException(),
                            ValidateLifetime = true
