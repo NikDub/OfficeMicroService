@@ -2,16 +2,15 @@
 using OfficeMicroService.Application.DTO;
 using OfficeMicroService.Data.Models;
 
-namespace OfficeMicroService.Data.Mapper
+namespace OfficeMicroService.Data.Mapper;
+
+public class MappingProfile : Profile
 {
-    public class MappingProfile : Profile
+    public MappingProfile()
     {
-        public MappingProfile()
-        {
-            CreateMap<OfficeDTO, Office>().ReverseMap();
-            CreateMap<OfficeForChangeDTO, Office>().ReverseMap();
-            CreateMap<OfficeForUpdateDTO, Office>().ReverseMap();
-            CreateMap<OfficeForUpdateDTO, OfficeDTO>().ReverseMap();
-        }
+        CreateMap<OfficeDto, Office>().ReverseMap();
+        CreateMap<OfficeForChangeDto, Office>().ReverseMap();
+        CreateMap<OfficeForUpdateDto, Office>().ReverseMap();
+        CreateMap<OfficeForUpdateDto, OfficeDto>().ReverseMap();
     }
 }

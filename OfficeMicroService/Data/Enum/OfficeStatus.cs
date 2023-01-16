@@ -1,8 +1,7 @@
-﻿namespace OfficeMicroService.Data.Enum
+﻿namespace OfficeMicroService.Data.Enum;
+
+public enum OfficeStatus
 {
-    public enum OfficeStatus
-    {
-        Active,
-        Inactive
-    }
+    Active,
+    Inactive
 }
