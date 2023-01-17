@@ -3,7 +3,7 @@ using MongoDB.Bson.Serialization.IdGenerators;
 
 namespace OfficeMicroService.Data.Models;
 
-public interface IBaseEntity
+public class BaseEntity
 {
     [BsonId(IdGenerator = typeof(GuidGenerator))]
     public Guid Id { get; set; }

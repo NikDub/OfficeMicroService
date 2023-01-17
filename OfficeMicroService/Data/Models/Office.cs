@@ -3,7 +3,7 @@
 namespace OfficeMicroService.Data.Models;
 
 [BsonCollection("Office")]
-public class Office : IBaseEntity
+public class Office : BaseEntity
 {
     public string PhotoId { get; set; }
     public string Status { get; set; }
