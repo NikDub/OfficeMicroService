@@ -1,12 +1,10 @@
 ﻿using MongoDB.Bson.Serialization.Attributes;
-using MongoDB.Bson;
+using MongoDB.Bson.Serialization.IdGenerators;
 
-namespace OfficeMicroService.Data.Models
+namespace OfficeMicroService.Data.Models;
+
+public class BaseEntity
 {
-    public class BaseEntity : IBaseEntity
-    {
-        [BsonId]
-        [BsonRepresentation(BsonType.ObjectId)]
-        public string Id { get; set; }
-    }
+    [BsonId(IdGenerator = typeof(GuidGenerator))]
+    public Guid Id { get; set; }
 }

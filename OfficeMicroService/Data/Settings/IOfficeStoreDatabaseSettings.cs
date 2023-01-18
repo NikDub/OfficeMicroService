@@ -1,9 +1,8 @@
-﻿namespace OfficeMicroService.Data.Settings
+﻿namespace OfficeMicroService.Data.Settings;
+
+public interface IOfficeStoreDatabaseSettings
 {
-    public interface IOfficeStoreDatabaseSettings
-    {
-        string OfficesCollectionName { get; set; }
-        string ConnectionString { get; set; }
-        string DatabaseName { get; set; }
-    }
+    string OfficesCollectionName { get; set; }
+    string ConnectionString { get; set; }
+    string DatabaseName { get; set; }
 }
