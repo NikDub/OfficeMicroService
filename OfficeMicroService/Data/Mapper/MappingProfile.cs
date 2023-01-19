@@ -9,7 +9,7 @@ public class MappingProfile : Profile
     public MappingProfile()
     {
         CreateMap<OfficeDto, Office>().ReverseMap();
-        CreateMap<OfficeForChangeDto, Office>().ReverseMap();
+        CreateMap<OfficeForCreateDto, Office>().ReverseMap();
         CreateMap<OfficeForUpdateDto, Office>().ReverseMap();
         CreateMap<OfficeForUpdateDto, OfficeDto>().ReverseMap();
     }

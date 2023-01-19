@@ -4,7 +4,7 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace OfficeMicroService.Application.DTO;
 
-public class OfficeForChangeDto
+public class OfficeForCreateDto
 {
     private const string NumberRegex = "[+]{1}[0-9]{12}";
 

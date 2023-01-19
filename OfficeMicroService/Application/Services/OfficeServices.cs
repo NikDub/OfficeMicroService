@@ -31,7 +31,7 @@ public class OfficeServices : IOfficeServices
         return _mapper.Map<OfficeDto>(office);
     }
 
-    public async Task<OfficeDto> CreateAsync(OfficeForChangeDto model)
+    public async Task<OfficeDto> CreateAsync(OfficeForCreateDto model)
     {
         if (model == null)
             return null;
@@ -55,13 +55,7 @@ public class OfficeServices : IOfficeServices
         return _mapper.Map<OfficeDto>(mapModel);
     }
 
-    public async Task RemoveAsync(string id)
-    {
-        var guid = Guid.Parse(id);
-        await _repository.DeleteAsync(office => office.Id == guid);
-    }
-
-    public async Task<OfficeDto> ChangeStatusAsync(string id)
+    public async Task ChangeStatusAsync(string id)
     {
         var office = await GetAsync(id);
         if (office == null)
@@ -73,9 +67,6 @@ public class OfficeServices : IOfficeServices
 
             var mapModel = _mapper.Map<Office>(office);
             await _repository.UpdateAsync(mapModel);
-            return _mapper.Map<OfficeDto>(mapModel);
         }
-
-        return null;
     }
 }

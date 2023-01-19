@@ -8,9 +8,9 @@ public interface IOfficeServices
 
     Task<OfficeDto> GetAsync(string id);
 
-    Task<OfficeDto> CreateAsync(OfficeForChangeDto model);
+    Task<OfficeDto> CreateAsync(OfficeForCreateDto model);
 
     Task<OfficeDto> UpdateAsync(string id, OfficeForUpdateDto model);
 
-    Task<OfficeDto> ChangeStatusAsync(string id);
+    Task ChangeStatusAsync(string id);
 }
