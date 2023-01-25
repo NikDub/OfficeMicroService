@@ -20,18 +20,17 @@ public class OfficeServices : IOfficeServices
 
     public async Task<List<OfficeDto>> GetAllAsync()
     {
-        var offices = await _repository.FindByCondition(office => true);
+        var offices = await _repository.FindAllAsync();
         return _mapper.Map<List<OfficeDto>>(offices);
     }
 
-    public async Task<OfficeDto> GetAsync(string id)
+    public async Task<OfficeDto> GetAsync(Guid id)
     {
-        var guid = Guid.Parse(id);
-        var office = (await _repository.FindByCondition(office => office.Id == guid)).FirstOrDefault();
+        var office = (await _repository.FindByConditionAsync(office => office.Id == id)).FirstOrDefault();
         return _mapper.Map<OfficeDto>(office);
     }
 
-    public async Task<OfficeDto> CreateAsync(OfficeForChangeDto model)
+    public async Task<OfficeDto> CreateAsync(OfficeForCreateDto model)
     {
         if (model == null)
             return null;
@@ -42,40 +41,28 @@ public class OfficeServices : IOfficeServices
         return _mapper.Map<OfficeDto>(mapModel);
     }
 
-    public async Task<OfficeDto> UpdateAsync(string id, OfficeForUpdateDto model)
+    public async Task<OfficeDto> UpdateAsync(Guid id, OfficeForUpdateDto model)
     {
         var office = await GetAsync(id);
         if (office == null || model == null)
             return null;
 
         var mapModel = _mapper.Map<Office>(model);
-        mapModel.Id = Guid.Parse(id);
+        mapModel.Id = id;
 
         await _repository.UpdateAsync(mapModel);
         return _mapper.Map<OfficeDto>(mapModel);
     }
 
-    public async Task RemoveAsync(string id)
-    {
-        var guid = Guid.Parse(id);
-        await _repository.DeleteAsync(office => office.Id == guid);
-    }
-
-    public async Task<OfficeDto> ChangeStatusAsync(string id)
+    public async Task ChangeStatusAsync(Guid id)
     {
         var office = await GetAsync(id);
         if (office == null)
             throw new NotFoundException("Office not found.");
 
-        if (Enum.TryParse(office.Status, out OfficeStatus status))
-        {
-            office.Status = (status == OfficeStatus.Active ? OfficeStatus.Inactive : OfficeStatus.Active).ToString();
+        office.Status = office.Status == OfficeStatus.Active ? OfficeStatus.Inactive : OfficeStatus.Active;
 
-            var mapModel = _mapper.Map<Office>(office);
-            await _repository.UpdateAsync(mapModel);
-            return _mapper.Map<OfficeDto>(mapModel);
-        }
-
-        return null;
+        var mapModel = _mapper.Map<Office>(office);
+        await _repository.UpdateAsync(mapModel);
     }
 }
