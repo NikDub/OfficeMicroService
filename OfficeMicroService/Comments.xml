@@ -11,7 +11,7 @@
             <response code="200">Returns offices list</response>
             <response code="500">Operation wasn't succeeded</response>
         </member>
-        <member name="M:OfficeMicroService.Presentation.Controllers.OfficesController.GetById(System.String)">
+        <member name="M:OfficeMicroService.Presentation.Controllers.OfficesController.GetById(System.Guid)">
             <summary>
                 Get Office Info by id
             </summary>
@@ -31,7 +31,7 @@
             <response code="422">Incorrect model</response>
             <response code="500">Operation wasn't succeeded</response>
         </member>
-        <member name="M:OfficeMicroService.Presentation.Controllers.OfficesController.Update(System.String,OfficeMicroService.Application.DTO.OfficeForUpdateDto)">
+        <member name="M:OfficeMicroService.Presentation.Controllers.OfficesController.Update(System.Guid,OfficeMicroService.Application.DTO.OfficeForUpdateDto)">
             <summary>
                 Update office for Receptionist
             </summary>
@@ -44,7 +44,7 @@
             <response code="422">Incorrect model</response>
             <response code="500">Operation wasn't succeeded</response>
         </member>
-        <member name="M:OfficeMicroService.Presentation.Controllers.OfficesController.ChangeStatus(System.String)">
+        <member name="M:OfficeMicroService.Presentation.Controllers.OfficesController.ChangeStatus(System.Guid)">
             <summary>
                 Update office status for Receptionist
             </summary>

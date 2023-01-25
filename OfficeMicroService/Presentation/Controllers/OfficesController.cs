@@ -38,14 +38,14 @@ public class OfficesController : Controller
     /// <response code="404">Office not found</response>
     /// <response code="500">Operation wasn't succeeded</response>
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(string id)
+    public async Task<IActionResult> GetById(Guid id)
     {
         Log.Information("Method {0} {1}", nameof(GetById), id);
         var office = await _officeServices.GetAsync(id);
         if (office == null)
         {
             Log.Information("Method {0}, Office {1} NotFound", nameof(GetById), id);
-            return NotFound();
+            return NotFound($"Can't find office by {id}");
         }
 
         return Ok(office);
@@ -80,7 +80,7 @@ public class OfficesController : Controller
             Log.Error("Method {0} can't created entity {1} {2} {3} {4} {5} {6} {7}", nameof(Create), model.City,
                 model.Street, model.HouseNumber, model.RegistryPhoneNumber, model.Status, model.PhotoId,
                 model.OfficeNumber);
-            return BadRequest();
+            return BadRequest("Can't created entity");
         }
 
         return Created("", office);
@@ -99,7 +99,7 @@ public class OfficesController : Controller
     /// <response code="500">Operation wasn't succeeded</response>
     [Authorize(Roles = nameof(UserRole.Receptionist))]
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(string id, [FromBody] OfficeForUpdateDto model)
+    public async Task<IActionResult> Update(Guid id, [FromBody] OfficeForUpdateDto model)
     {
         Log.Information("Method {0} {1}", nameof(Update), id);
         if (!ModelState.IsValid)
@@ -114,7 +114,7 @@ public class OfficesController : Controller
         if (office == null)
         {
             Log.Information("Method {0}, Office {1}  NotFound", nameof(Update), id);
-            return NotFound();
+            return NotFound($"Can't find office by {id}");
         }
 
         return NoContent();
@@ -131,7 +131,7 @@ public class OfficesController : Controller
     /// <response code="500">Operation wasn't succeeded</response>
     [Authorize(Roles = nameof(UserRole.Receptionist))]
     [HttpPut("{id}/status")]
-    public async Task<IActionResult> ChangeStatus(string id)
+    public async Task<IActionResult> ChangeStatus(Guid id)
     {
         Log.Information("Method {0} {1}", nameof(ChangeStatus), id);
         await _officeServices.ChangeStatusAsync(id);

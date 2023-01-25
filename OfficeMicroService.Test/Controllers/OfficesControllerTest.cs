@@ -1,6 +1,5 @@
 ﻿using AutoFixture;
 using FluentAssertions;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using OfficeMicroService.Application.DTO;
@@ -13,49 +12,41 @@ namespace OfficeMicroService.Test.Controllers
 {
     public class OfficesControllerTest
     {
-        private readonly Mock<IOfficeServices> _service;
+        private readonly Mock<IOfficeServices> _serviceMock;
         private readonly OfficesController _controller;
 
         public OfficesControllerTest()
         {
-            _service = new Mock<IOfficeServices>();
-            _controller = new OfficesController(_service.Object);
+            _serviceMock = new Mock<IOfficeServices>();
+            _controller = new OfficesController(_serviceMock.Object);
         }
 
         [Fact]
-        public async Task GetAll_WithCorrectData_ReturnsStatusOk()
+        public async Task GetAll_WithCorrectData_ReturnsStatusOkAndData()
         {
             //Arrange
-            var officeDto = new OfficeDto
-            {
-                Id = "ECA5E74C-3219-4004-B23D-3AFC2137B482",
-                Status = OfficeStatus.Active.ToString(),
-                PhotoId = "6E0122D6-98D5-49D4-AAB3-9700851630F9",
-                Street = "Street 1",
-                City = "City 1",
-                HouseNumber = "1A",
-                OfficeNumber = "33",
-                RegistryPhoneNumber = "+375338926491"
-            };
-            var officeItemsMapped = new Fixture().CreateMany<OfficeDto>(5);
-            officeItemsMapped = officeItemsMapped.Append(officeDto);
+         
+            var officeItemsMapped = new Fixture().CreateMany<OfficeDto>(5).ToList();
 
-            _service.Setup(r => r.GetAllAsync()).ReturnsAsync(officeItemsMapped.ToList());
+            _serviceMock.Setup(r => r.GetAllAsync()).ReturnsAsync(officeItemsMapped);
             //Act
             var actual = await _controller.GetAll();
             //Assert
             actual.Should().BeOfType<OkObjectResult>();
+            var result = (actual as OkObjectResult).Value;
+            result.Should().NotBeNull();
+            result.Should().BeSameAs(officeItemsMapped);
         }
 
         [Fact]
-        public async Task GetAll_GetAllAsyncThrowException_ReturnsStatusBadRequest()
+        public async Task GetAll_GetAllAsyncThrowException_ExceptionIsThrown()
         {
             //Arrange
-            _service.Setup(r => r.GetAllAsync()).ThrowsAsync(new BadHttpRequestException("", StatusCodes.Status400BadRequest));
+            _serviceMock.Setup(r => r.GetAllAsync()).ThrowsAsync(new Exception(""));
             //Act
             Func<Task> actual = () => _controller.GetAll();
             //Assert
-            actual.Should().ThrowAsync<BadHttpRequestException>();
+            await actual.Should().ThrowAsync<Exception>();
         }
 
 
@@ -63,62 +54,67 @@ namespace OfficeMicroService.Test.Controllers
         public async Task GetById_WithInValidId_ReturnsStatusNotFound()
         {
             //Arrange
-            string id = Guid.NewGuid().ToString();
+            var id = Guid.NewGuid();
             OfficeDto officeDto = null;
 
-            _service.Setup(r => r.GetAsync(id)).ReturnsAsync(officeDto);
+            _serviceMock.Setup(r => r.GetAsync(id)).ReturnsAsync(officeDto);
             //Act
             var actual = await _controller.GetById(id);
             //Assert
-            actual.Should().BeOfType<NotFoundResult>();
+            actual.Should().BeOfType<NotFoundObjectResult>();
+            string result = (actual as NotFoundObjectResult).Value.ToString();
+            result.Should().NotBeNull();
+            result.Should().BeEquivalentTo($"Can't find office by {id}");
         }
 
         [Fact]
-        public async Task GetById_GetAsyncThrowException_ReturnsStatusBadRequest()
+        public async Task GetById_GetAsyncThrowException_ExceptionIsThrown()
         {
             //Arrange
-            string id = Guid.NewGuid().ToString();
+            var id = Guid.NewGuid();
 
-            _service.Setup(r => r.GetAsync(id)).ThrowsAsync(new BadHttpRequestException("", StatusCodes.Status400BadRequest));
+            _serviceMock.Setup(r => r.GetAsync(id)).ThrowsAsync(new Exception(""));
             //Act
             Func<Task> actual = () => _controller.GetById(id);
             //Assert
-            actual.Should().ThrowAsync<BadHttpRequestException>();
+            await actual.Should().ThrowAsync<Exception>();
         }
 
 
         [Fact]
-        public async Task GetById_WithCorrectData_ReturnsStatusOk()
+        public async Task GetById_WithValidData_ReturnsStatusOk()
         {
             //Arrange
-            string id = Guid.NewGuid().ToString();
+            var id = Guid.NewGuid();
 
             var officeDto = new OfficeDto
             {
                 Id = id,
-                Status = OfficeStatus.Active.ToString(),
-                PhotoId = "6E0122D6-98D5-49D4-AAB3-9700851630F9",
+                Status = OfficeStatus.Active,
+                PhotoId = Guid.NewGuid(),
                 Street = "Street 1",
                 City = "City 1",
                 HouseNumber = "1A",
                 OfficeNumber = "33",
                 RegistryPhoneNumber = "+375338926491"
             };
-            _service.Setup(r => r.GetAsync(id)).ReturnsAsync(officeDto);
+            _serviceMock.Setup(r => r.GetAsync(id)).ReturnsAsync(officeDto);
             //Act
             var actual = await _controller.GetById(id);
             //Assert
             actual.Should().BeOfType<OkObjectResult>();
-            (actual as OkObjectResult).Value.Should().BeSameAs(officeDto);
+            var result = (actual as OkObjectResult).Value;
+            result.Should().NotBeNull();
+            result.Should().BeSameAs(officeDto);
         }
 
         [Fact]
-        public async Task Create_WithInValidModel_ReturnsStatusUnprocessableEntity()
+        public async Task Create_WithInvalidModel_ReturnsStatusUnprocessableEntity()
         {
             //Arrange
             OfficeForCreateDto model = new OfficeForCreateDto
             {
-                PhotoId = "6E0122D6-98D5-49D4-AAB3-9700851630F9",
+                PhotoId = Guid.NewGuid(),
                 Street = "Street 1",
                 City = "City 1",
                 HouseNumber = "1A",
@@ -138,7 +134,7 @@ namespace OfficeMicroService.Test.Controllers
             //Arrange
             OfficeForCreateDto model = new OfficeForCreateDto
             {
-                PhotoId = "6E0122D6-98D5-49D4-AAB3-9700851630F9",
+                PhotoId = Guid.NewGuid(),
                 Street = "Street 1",
                 City = "City 1",
                 HouseNumber = "1A",
@@ -147,11 +143,11 @@ namespace OfficeMicroService.Test.Controllers
             };
 
             OfficeDto officeDto = null;
-            _service.Setup(r => r.CreateAsync(model)).ReturnsAsync(officeDto);
+            _serviceMock.Setup(r => r.CreateAsync(model)).ReturnsAsync(officeDto);
             //Act
             var actual = await _controller.Create(model);
             //Assert
-            actual.Should().BeOfType<BadRequestResult>();
+            actual.Should().BeOfType<BadRequestObjectResult>();
         }
 
         [Fact]
@@ -160,7 +156,7 @@ namespace OfficeMicroService.Test.Controllers
             //Arrange
             OfficeForCreateDto model = new OfficeForCreateDto
             {
-                PhotoId = "6E0122D6-98D5-49D4-AAB3-9700851630F9",
+                PhotoId = Guid.NewGuid(),
                 Street = "Street 1",
                 City = "City 1",
                 HouseNumber = "1A",
@@ -170,19 +166,22 @@ namespace OfficeMicroService.Test.Controllers
 
             OfficeDto officeDto = new OfficeDto
             {
-                PhotoId = "6E0122D6-98D5-49D4-AAB3-9700851630F9",
-                Street = "Street 1",
-                City = "City 1",
-                HouseNumber = "1A",
-                OfficeNumber = "33",
-                RegistryPhoneNumber = "+375338926491"
+                PhotoId = model.PhotoId,
+                Street = model.Street,
+                City = model.City,
+                HouseNumber = model.HouseNumber,
+                OfficeNumber = model.OfficeNumber,
+                RegistryPhoneNumber = model.RegistryPhoneNumber
             };
 
-            _service.Setup(r => r.CreateAsync(model)).ReturnsAsync(officeDto);
+            _serviceMock.Setup(r => r.CreateAsync(model)).ReturnsAsync(officeDto);
             //Act
             var actual = await _controller.Create(model);
             //Assert
             actual.Should().BeOfType<CreatedResult>();
+            var result = (actual as CreatedResult).Value;
+            result.Should().NotBeNull();
+            result.Should().BeSameAs(officeDto);
         }
 
 
@@ -190,10 +189,10 @@ namespace OfficeMicroService.Test.Controllers
         public async Task Update_WithInValidModel_ReturnsStatusUnprocessableEntity()
         {
             //Arrange
-            string id = Guid.NewGuid().ToString();
+            var id = Guid.NewGuid();
             OfficeForUpdateDto model = new OfficeForUpdateDto
             {
-                PhotoId = "6E0122D6-98D5-49D4-AAB3-9700851630F9",
+                PhotoId = Guid.NewGuid(),
                 Street = "Street 1",
                 City = "City 1",
                 HouseNumber = "1A",
@@ -211,31 +210,31 @@ namespace OfficeMicroService.Test.Controllers
         public async Task Update_WhenUpdateAsyncThrowException_ReturnsStatusBadRequest()
         {
             //Arrange
-            string id = Guid.NewGuid().ToString();
+            var id = Guid.NewGuid();
             OfficeForUpdateDto model = new OfficeForUpdateDto
             {
-                PhotoId = "6E0122D6-98D5-49D4-AAB3-9700851630F9",
+                PhotoId = Guid.NewGuid(),
                 Street = "Street 1",
                 City = "City 1",
                 HouseNumber = "1A",
                 OfficeNumber = "33",
                 RegistryPhoneNumber = "+375338926491"
             };
-            _service.Setup(r => r.UpdateAsync(id, model)).ThrowsAsync(new BadHttpRequestException("", StatusCodes.Status400BadRequest));
+            _serviceMock.Setup(r => r.UpdateAsync(id, model)).ThrowsAsync(new Exception(""));
             //Act
             Func<Task> actual = () => _controller.Update(id, model);
             //Assert
-            actual.Should().ThrowAsync<BadHttpRequestException>();
+            await actual.Should().ThrowAsync<Exception>();
         }
 
         [Fact]
         public async Task Update_WithInCorrectId_ReturnsStatusNotFound()
         {
             //Arrange
-            string id = Guid.NewGuid().ToString();
+            var id = Guid.NewGuid();
             OfficeForUpdateDto model = new OfficeForUpdateDto
             {
-                PhotoId = "6E0122D6-98D5-49D4-AAB3-9700851630F9",
+                PhotoId = Guid.NewGuid(),
                 Street = "Street 1",
                 City = "City 1",
                 HouseNumber = "1A",
@@ -244,21 +243,24 @@ namespace OfficeMicroService.Test.Controllers
             };
 
             OfficeDto officeDto = null;
-            _service.Setup(r => r.UpdateAsync(id, model)).ReturnsAsync(officeDto);
+            _serviceMock.Setup(r => r.UpdateAsync(id, model)).ReturnsAsync(officeDto);
             //Act
             var actual = await _controller.Update(id, model);
             //Assert
-            actual.Should().BeOfType<NotFoundResult>();
+            actual.Should().BeOfType<NotFoundObjectResult>();
+            string result = (actual as NotFoundObjectResult).Value.ToString();
+            result.Should().NotBeNull();
+            result.Should().BeEquivalentTo($"Can't find office by {id}");
         }
 
         [Fact]
         public async Task Update_WithCorrectData_ReturnsStatusNoContent()
         {
             //Arrange
-            string id = Guid.NewGuid().ToString();
+            var id = Guid.NewGuid();
             OfficeForUpdateDto model = new OfficeForUpdateDto
             {
-                PhotoId = "6E0122D6-98D5-49D4-AAB3-9700851630F9",
+                PhotoId = Guid.NewGuid(),
                 Street = "Street 1",
                 City = "City 1",
                 HouseNumber = "1A",
@@ -268,15 +270,15 @@ namespace OfficeMicroService.Test.Controllers
 
             OfficeDto officeDto = new OfficeDto
             {
-                PhotoId = "6E0122D6-98D5-49D4-AAB3-9700851630F9",
-                Street = "Street 1",
-                City = "City 1",
-                HouseNumber = "1A",
-                OfficeNumber = "33",
-                RegistryPhoneNumber = "+375338926491"
+                PhotoId = model.PhotoId,
+                Street = model.Street,
+                City = model.City,
+                HouseNumber = model.HouseNumber,
+                OfficeNumber = model.OfficeNumber,
+                RegistryPhoneNumber = model.RegistryPhoneNumber
             };
 
-            _service.Setup(r => r.UpdateAsync(id, model)).ReturnsAsync(officeDto);
+            _serviceMock.Setup(r => r.UpdateAsync(id, model)).ReturnsAsync(officeDto);
             //Act
             var actual = await _controller.Update(id, model);
             //Assert
@@ -288,8 +290,8 @@ namespace OfficeMicroService.Test.Controllers
         public async Task ChangeStatus_WithCorrectData_ReturnsStatusNoContent()
         {
             //Arrange
-            string id = Guid.NewGuid().ToString();
-            _service.Setup(r => r.ChangeStatusAsync(id));
+            var id = Guid.NewGuid();
+            _serviceMock.Setup(r => r.ChangeStatusAsync(id));
             //Act
             var actual = await _controller.ChangeStatus(id);
             //Assert
@@ -300,24 +302,25 @@ namespace OfficeMicroService.Test.Controllers
         public async Task ChangeStatus_WhenChangeStatusAsyncThrowNotFoundException_ReturnsStatusNotFound()
         {
             //Arrange
-            string id = Guid.NewGuid().ToString();
-            _service.Setup(r => r.ChangeStatusAsync(id)).Throws(new NotFoundException(""));
+            var id = Guid.NewGuid();
+            _serviceMock.Setup(r => r.ChangeStatusAsync(id)).Throws(new NotFoundException("Office not found."));
             //Act
             var actual = () => _controller.ChangeStatus(id);
             //Assert
-            actual.Should().ThrowAsync<NotFoundException>();
+           
+            await actual.Should().ThrowAsync<NotFoundException>();
         }
 
         [Fact]
         public async Task ChangeStatus_WhenChangeStatusAsyncThrowBadHttpRequestException_ReturnsStatusBadRequest()
         {
             //Arrange
-            string id = Guid.NewGuid().ToString();
-            _service.Setup(r => r.ChangeStatusAsync(id)).Throws(new BadHttpRequestException("", StatusCodes.Status400BadRequest));
+            var id = Guid.NewGuid();
+            _serviceMock.Setup(r => r.ChangeStatusAsync(id)).Throws(new Exception(""));
             //Act
             var actual = () => _controller.ChangeStatus(id);
             //Assert
-            actual.Should().ThrowAsync<BadHttpRequestException>();
+            await actual.Should().ThrowAsync<Exception>();
         }
     }
 }

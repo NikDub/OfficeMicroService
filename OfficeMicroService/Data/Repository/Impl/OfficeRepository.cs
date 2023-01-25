@@ -1,8 +1,8 @@
-﻿using System.Linq.Expressions;
-using MongoDB.Driver;
+﻿using MongoDB.Driver;
 using OfficeMicroService.Application.Extensions;
 using OfficeMicroService.Data.Models;
 using OfficeMicroService.Data.Settings;
+using System.Linq.Expressions;
 
 namespace OfficeMicroService.Data.Repository.Impl;
 
@@ -23,14 +23,14 @@ public class OfficeRepository : IOfficeRepository
         await _collection.InsertOneAsync(entity);
     }
 
-    public async Task DeleteAsync(Expression<Func<Office, bool>> expression)
-    {
-        await _collection.FindOneAndDeleteAsync(expression);
-    }
-
-    public async Task<List<Office>> FindByCondition(Expression<Func<Office, bool>> expression)
+    public async Task<List<Office>> FindByConditionAsync(Expression<Func<Office, bool>> expression)
     {
         return (await _collection.FindAsync(expression)).ToList();
+    }
+
+    public async Task<List<Office>> FindAllAsync()
+    {
+        return (await _collection.FindAsync(r => true)).ToList();
     }
 
     public async Task UpdateAsync(Office entity)

@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using OfficeMicroService.Data.Enum;
 
 namespace OfficeMicroService.Application.DTO;
 
@@ -9,9 +10,9 @@ public class OfficeForUpdateDto
     private const string NumberRegex = "[+]{1}[0-9]{12}";
 
     [BsonRepresentation(BsonType.ObjectId)]
-    public string PhotoId { get; set; }
+    public Guid PhotoId { get; set; }
 
-    [BsonRequired] public string Status { get; set; }
+    [BsonRequired] public OfficeStatus Status { get; set; }
 
     [BsonRequired] public string City { get; set; }
 
