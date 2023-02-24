@@ -12,4 +12,5 @@ public class OfficeDto
     public string HouseNumber { get; set; }
     public string OfficeNumber { get; set; }
     public string RegistryPhoneNumber { get; set; }
+    public List<double> Location { get; set; }
 }

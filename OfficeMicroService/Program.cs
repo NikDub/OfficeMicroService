@@ -15,9 +15,11 @@ public class Program
         builder.Services.AddControllers();
         builder.Services.AddAuthorization();
         builder.Services.AddEndpointsApiExplorer();
+        builder.Services.AddCors();
         builder.Services.ConfigureSwagger();
         builder.Services.ConfigureSerilog(builder.Host);
         var app = builder.Build();
+        app.UseCors(x => x.AllowAnyHeader().AllowAnyOrigin().AllowAnyMethod());
 
         if (app.Environment.IsDevelopment())
         {

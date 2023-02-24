@@ -19,6 +19,7 @@ public class OfficeForUpdateDto
     [BsonRequired] public string Street { get; set; }
 
     [BsonRequired] public string HouseNumber { get; set; }
+    public List<double> Location { get; set; }
 
     public string OfficeNumber { get; set; }
 
